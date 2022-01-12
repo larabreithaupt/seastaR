@@ -77,37 +77,44 @@ new_phylo <- trees_to_star(tree_list)
 
 trees_to_vcv <- function(tree_list) {
   
-  len_tip = length(tree_list[[1]]$tip.label)
+  tree1 = tree_list[[1]]
+  len_tip = length(tree1[["tip.label"]])
   
   genetree_vcv <- matrix(0, 
                         len_tip, 
                         len_tip)
-  
-  for(i in 1:length(tree_list)){
+
+  for(i in 1:(length(tree_list) - 1)){
     
-  
     tree <- tree_list[[i]]
+  
+    edge_len <- length(tree[["edge.length"]])
     
-    edge_len <- length(tree$edge.length)
-    
+    height <- nodeHeights(tree)
+    print(max(height))
     
     for(j in 1:edge_len){
       
-      node1 = tree$edge[j, 1]
-      node2 = tree$edge[j, 2]
+      tree_edge <- tree[["edge"]]
+
+      tree_edge_len <- tree[["edge.length"]]
       
+      #print(tree_edge_len)
+      
+      node1 = tree_edge[j, 1]
+      node2 = tree_edge[j, 2]
+      
+
       if ((node1 > len_tip) && (node2 > len_tip)) {
         
-        ind = tree$edge.length[j]
-        
-        print("internal branch")
+        ind = tree_edge_len[j]
         
       }
       
     }
     
   }
-  
+  #print(genetree_vcv)
   return(genetree_vcv)
   
 }
