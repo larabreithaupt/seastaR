@@ -49,6 +49,8 @@ trees_to_star <- function(genetrees){
   combined_trees <- list()
   class(combined_trees) <- "phylo"
   
+  #in-order tree traversal
+  
   combined_trees$edge <- matrix(c(
     4,5,
     5,6,
@@ -78,11 +80,14 @@ new_phylo <- trees_to_star(tree_list)
 trees_to_vcv <- function(tree_list) {
   
   tree1 = tree_list[[1]]
-  len_tip = length(tree1[["tip.label"]])
+  tips = tree1[["tip.label"]]
+  len_tip = length(tips)
   
   genetree_vcv <- matrix(0, 
                         len_tip, 
                         len_tip)
+  rownames(genetree_vcv) <- tips
+  colnames(genetree_vcv) <- tips
 
   for(i in 1:(length(tree_list) - 1)){
     
@@ -90,31 +95,57 @@ trees_to_vcv <- function(tree_list) {
   
     edge_len <- length(tree[["edge.length"]])
     
-    height <- nodeHeights(tree)
-    print(max(height))
+    height <- max(nodeHeights(tree))
     
-    for(j in 1:edge_len){
+    tip_combos <- combn(tips, 2)
+    
+    for(j in 1:length(tip_combos[1,])){
       
-      tree_edge <- tree[["edge"]]
-
-      tree_edge_len <- tree[["edge.length"]]
+      col <- tip_combos[,j]
       
-      #print(tree_edge_len)
+      mrca <- findMRCA(tree, col)
       
-      node1 = tree_edge[j, 1]
-      node2 = tree_edge[j, 2]
-      
-
-      if ((node1 > len_tip) && (node2 > len_tip)) {
-        
-        ind = tree_edge_len[j]
-        
+      if (mrca == (len_tip + 1)){
+        next
       }
       
-    }
+      else{
+        
+        tree_edge <- tree[["edge"]]
+        tree_edge_len <- tree[["edge.length"]]
+        
+        for(k in 1:length(tree_edge_len)){
+          
+          if((tree_edge[k, 1] == (mrca - 1)) && (tree_edge[k, 2] == mrca)){
+            
+            internal <- tree_edge_len[k]
+            gene_freq <- tree_list[[5]][i]
+            
+            add1 <- (genetree_vcv[col[1], col[2]]) + (internal*gene_freq)
+            add2 <- (genetree_vcv[col[2], col[1]]) + (internal*gene_freq)
+            
+            genetree_vcv[col[1], col[2]] <- add1
+            genetree_vcv[col[2], col[1]] <- add2
+            
+          }
+          
+        }
+        
+        for(m in 1:len_tip){
+          
+          label <- tips[m]
+          diag <- genetree_vcv[label, label] + (height*gene_freq)
+          
+          genetree_vcv[label, label] <- diag
+          
+        }
+          
+      }
+      
+    }  
     
   }
-  #print(genetree_vcv)
+  print(genetree_vcv)
   return(genetree_vcv)
   
 }
