@@ -4,6 +4,10 @@ library(phytools)
 library(geiger)
 
 parse_input_file <- function(file_path){
+
+  ### Reads input file, containing 
+  ### gene trees in Newick format and
+  ### their frequencues
   
   iftree = FALSE
   tree_list <- vector(mode = "list")
@@ -16,23 +20,23 @@ parse_input_file <- function(file_path){
   while (TRUE) {
     
     line = readLines(input_file, n = 1)
-    if (length(line) == 0){
+    if (length(line) == 0){ #skip empty lines
       break
     }
     
-    if (startsWith(line, "(")){
+    if (startsWith(line, "(")){ #line containing a newick tree
       tree <- read.tree(text = line)
       tree_list[[i]] <- tree
       i <- i + 1
     }
     
-    if (startsWith(line, "0")){
+    if (startsWith(line, "0")){ #line containing tree frequency 
       freq <- as.double(line)
       freqs_vector[j] <- freq
       j <- j + 1
     }
     
-    tree_list[[i]] <- freqs_vector
+    tree_list[[i]] <- freqs_vector #add vector of tree freqs to end of list 
     
   }
 
@@ -45,44 +49,51 @@ parse_input_file <- function(file_path){
 tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastar_test_input.txt")
 
 trees_to_star <- function(genetrees){
+
+  #Function that takes list of gene trees as input 
+  #and returns a vcv and single phylo object summarizing them.
+  #Currently hard-codes an example case, need to create
+  #a generalized version. This function is the main function
+  #of the program. 
   
   combined_trees <- list()
   class(combined_trees) <- "phylo"
   
-  #in-order tree traversal
-  
   combined_trees$edge <- matrix(c(
-    4,5,
-    5,6,
-    6,3,
+    4,5, #Pre-order tree traversal that contains extra
+    5,6, #nodes for covariances not described by a standard species 
+    6,3, #tree
     6,1,
     5,7,
     7,2,
     7,1, 
     4,1), 8,2, byrow = TRUE)
-  combined_trees$Nnode <- 4
-  combined_trees$node.label <- c(4,5,6,7)
-  combined_trees$tip.label <- c("A", "B", "C")
-  combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1)
+  combined_trees$Nnode <- 4 
+  combined_trees$node.label <- c(4,5,6,7) #internal node labels 
+  combined_trees$tip.label <- c("A", "B", "C") #leaf node labels 
+  combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1) #branch lengths corresponding to traversals 
   
-  #trait <- setNames(c(0.2, 0.2, 0.2, 0.2), c("A", "B", "C"))
-  #print(trait)
-  #fit.BM <- ace(trait, combined_trees, method = "ML")
+  combined_vcv <- vcv(combined_trees) #variance-covariance matrix from our phylo object
   
-  tree <- vcv(combined_trees)
-  
-  return(list(tree, combined_trees))
+  return(list(combined_vcv, combined_trees))
   
 }
 
 new_phylo <- trees_to_star(tree_list)
 
 trees_to_vcv <- function(tree_list) {
+
+  #Our own implementation for constructing a 
+  #phylogenetic covariance matrix from a set of 
+  #input gene trees. Used to benchmark trees_to_star,
+  #and also for methods where you can pass the covariance
+  #matrix directly. 
   
   tree1 = tree_list[[1]]
-  tips = tree1[["tip.label"]]
+  tips = tree1[["tip.label"]] 
   len_tip = length(tips)
   
+  #Initialize vcv
   genetree_vcv <- matrix(0, 
                         len_tip, 
                         len_tip)
@@ -91,63 +102,52 @@ trees_to_vcv <- function(tree_list) {
 
   for(i in 1:(length(tree_list) - 1)){
     
-    tree <- tree_list[[i]]
-  
+    tree <- tree_list[[i]] #current gene tree
     edge_len <- length(tree[["edge.length"]])
-    
     height <- max(nodeHeights(tree))
+    tip_combos <- combn(tips, 2) #pairwise combinations of taxa
     
-    tip_combos <- combn(tips, 2)
-    
-    for(j in 1:length(tip_combos[1,])){
+    for(j in 1:length(tip_combos[1,])){ #for each pairwise combo
       
-      col <- tip_combos[,j]
+      col <- tip_combos[,j] #current pairwise combo
+      mrca <- findMRCA(tree, col) #most recent common ancestor of combo
       
-      mrca <- findMRCA(tree, col)
-      
-      if (mrca == (len_tip + 1)){
+      if (mrca == (len_tip + 1)){ #if MRCA is root 
         next
       }
-      
       else{
         
         tree_edge <- tree[["edge"]]
         tree_edge_len <- tree[["edge.length"]]
         
-        for(k in 1:length(tree_edge_len)){
+        for(k in 1:length(tree_edge_len)){ #iterating through node traversal
           
-          if((tree_edge[k, 1] == (mrca - 1)) && (tree_edge[k, 2] == mrca)){
+          if((tree_edge[k, 1] == (mrca - 1)) && (tree_edge[k, 2] == mrca)){ #traversal from parent node to our MRCA
             
-            internal <- tree_edge_len[k]
-            gene_freq <- tree_list[[5]][i]
+            internal <- tree_edge_len[k] #internal branch length
+            gene_freq <- tree_list[[5]][i] #gene tree frequency 
+
+	    #Fill off-diagonal elements of the VCV
             
             add1 <- (genetree_vcv[col[1], col[2]]) + (internal*gene_freq)
             add2 <- (genetree_vcv[col[2], col[1]]) + (internal*gene_freq)
             
             genetree_vcv[col[1], col[2]] <- add1
-            genetree_vcv[col[2], col[1]] <- add2
-            
+            genetree_vcv[col[2], col[1]] <- add2   
           }
-          
-        }
-        
-        for(m in 1:len_tip){
+        } 
+        for(m in 1:len_tip){ #Fill the diagonal elements (variance of each species)
           
           label <- tips[m]
           diag <- genetree_vcv[label, label] + (height*gene_freq)
-          
           genetree_vcv[label, label] <- diag
           
         }
-          
       }
-      
     }  
-    
   }
   print(genetree_vcv)
-  return(genetree_vcv)
-  
+  return(genetree_vcv)  
 }
 
 genetree_vcv <- trees_to_vcv(tree_list)
