@@ -9,7 +9,7 @@ parse_input_file <- function(file_path){
   ### gene trees in Newick format and
   ### their frequencues
   
-  iftree = FALSE
+  iftree =FALSE
   tree_list <- vector(mode = "list")
   freqs_vector <- vector()
   input_file = file(file_path, "r")

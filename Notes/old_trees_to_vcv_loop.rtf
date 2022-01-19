@@ -1,0 +1,51 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2636
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0     \
+    tree <- tree_list[[i]] #current gene tree\
+    edge_len <- length(tree[["edge.length"]])\
+    height <- max(nodeHeights(tree))\
+    tip_combos <- combn(tips, 2) #pairwise combinations of taxa\
+    \
+    for(j in 1:length(tip_combos[1,]))\{ #for each pairwise combo\
+      \
+      col <- tip_combos[,j] #current pairwise combo\
+      mrca <- findMRCA(tree, col) #most recent common ancestor of combo\
+      \
+      if (mrca == (len_tip + 1))\{ #if MRCA is root \
+        next\
+      \}\
+      else\{\
+        \
+        tree_edge <- tree[["edge"]]\
+        tree_edge_len <- tree[["edge.length"]]\
+        \
+        for(k in 1:length(tree_edge_len))\{ #iterating through node traversal\
+          \
+          if((tree_edge[k, 1] == (mrca - 1)) && (tree_edge[k, 2] == mrca))\{ #traversal from parent node to our MRCA\
+            \
+            internal <- tree_edge_len[k] #internal branch length\
+            gene_freq <- tree_list[[5]][i] #gene tree frequency \
+\
+	    #Fill off-diagonal elements of the VCV\
+            \
+            add1 <- (genetree_vcv[col[1], col[2]]) + (internal*gene_freq)\
+            add2 <- (genetree_vcv[col[2], col[1]]) + (internal*gene_freq)\
+            \
+            genetree_vcv[col[1], col[2]] <- add1\
+            genetree_vcv[col[2], col[1]] <- add2   \
+          \}\
+        \} \
+        for(m in 1:len_tip)\{ #Fill the diagonal elements (variance of each species)\
+          \
+          label <- tips[m]\
+          diag <- genetree_vcv[label, label] + (height*gene_freq)\
+          genetree_vcv[label, label] <- diag\
+          \
+        \}\
+      \}\
+    \}}
