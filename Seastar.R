@@ -46,7 +46,7 @@ parse_input_file <- function(file_path){
   
 }
 
-tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastar_test_input.txt")
+tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastaR/seastar_test_input.txt")
 
 trees_to_star <- function(genetrees){
 
@@ -81,6 +81,39 @@ trees_to_star <- function(genetrees){
 
 new_phylo <- trees_to_star(tree_list)
 
+get_root_node_matrix <- function(genetree){
+  
+  node_dists <- list()
+  
+  tree_height <-max(nodeHeights(genetree))
+  
+  tips = genetree[["tip.label"]] 
+
+  tip_combos <- combn(tips, 2) #pairwise combinations of taxa
+  
+  for(j in 1:length(tip_combos[1,])){ #for each pairwise combo
+    
+    col <- tip_combos[,j] #current pairwise combo
+    mrca <- fastMRCA(genetree, col) #most recent common ancestor of combo
+    print(mrca)
+    mrca_height <- fastHeight(genetree, col) #height of mrca
+    
+    root_to_tip_dist = tree_height - mrca_height #distance from root to tip
+    
+    node_dists[[mrca]] = root_to_tip_dist
+    
+  }
+  
+}
+
+root_node_matrix <- get_root_node_matrix(tree_list[[1]])
+
+fill_matrix <- function(genetree){
+  
+  partial_matrix <- matrix()
+  
+}
+
 trees_to_vcv <- function(tree_list) {
 
   #Our own implementation for constructing a 
@@ -102,53 +135,12 @@ trees_to_vcv <- function(tree_list) {
 
   for(i in 1:(length(tree_list) - 1)){
     
-    tree <- tree_list[[i]] #current gene tree
-    edge_len <- length(tree[["edge.length"]])
-    height <- max(nodeHeights(tree))
-    tip_combos <- combn(tips, 2) #pairwise combinations of taxa
-    
-    for(j in 1:length(tip_combos[1,])){ #for each pairwise combo
-      
-      col <- tip_combos[,j] #current pairwise combo
-      mrca <- findMRCA(tree, col) #most recent common ancestor of combo
-      
-      if (mrca == (len_tip + 1)){ #if MRCA is root 
-        next
-      }
-      else{
-        
-        tree_edge <- tree[["edge"]]
-        tree_edge_len <- tree[["edge.length"]]
-        
-        for(k in 1:length(tree_edge_len)){ #iterating through node traversal
-          
-          if((tree_edge[k, 1] == (mrca - 1)) && (tree_edge[k, 2] == mrca)){ #traversal from parent node to our MRCA
-            
-            internal <- tree_edge_len[k] #internal branch length
-            gene_freq <- tree_list[[5]][i] #gene tree frequency 
-
-	    #Fill off-diagonal elements of the VCV
-            
-            add1 <- (genetree_vcv[col[1], col[2]]) + (internal*gene_freq)
-            add2 <- (genetree_vcv[col[2], col[1]]) + (internal*gene_freq)
-            
-            genetree_vcv[col[1], col[2]] <- add1
-            genetree_vcv[col[2], col[1]] <- add2   
-          }
-        } 
-        for(m in 1:len_tip){ #Fill the diagonal elements (variance of each species)
-          
-          label <- tips[m]
-          diag <- genetree_vcv[label, label] + (height*gene_freq)
-          genetree_vcv[label, label] <- diag
-          
-        }
-      }
-    }  
   }
   print(genetree_vcv)
   return(genetree_vcv)  
 }
 
 genetree_vcv <- trees_to_vcv(tree_list)
+
+
 
