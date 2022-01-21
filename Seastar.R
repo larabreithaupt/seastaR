@@ -48,7 +48,7 @@ parse_input_file <- function(file_path){
 
 tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastaR/seastar_test_input.txt")
 
-trees_to_star <- function(genetrees){
+trees_to_phylo_star <- function(genetrees){
 
   #Function that takes list of gene trees as input 
   #and returns a vcv and single phylo object summarizing them.
@@ -73,19 +73,27 @@ trees_to_star <- function(genetrees){
   combined_trees$tip.label <- c("A", "B", "C") #leaf node labels 
   combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1) #branch lengths corresponding to traversals 
   
-  combined_vcv <- vcv(combined_trees) #variance-covariance matrix from our phylo object
+  combined_vcv <- phytools::vcvPhylo(combined_trees, anc.nodes = FALSE) #variance-covariance matrix from our phylo object
   
   return(list(combined_vcv, combined_trees))
-  
 }
 
-new_phylo <- trees_to_star(tree_list)
+new_phylo <- trees_to_phylo_star(tree_list)
+print(new_phylo[[1]])
+print(det(new_phylo[[1]]))
+
+
+tips <- c(1, 2, 3)
+names(tips) <- c("A", "B", "C")
+
+anc <- phytools::anc.ML(new_phylo[[2]], tips, anc.nodes = FALSE)
+print(anc)
 
 get_partial_cov_matrix <- function(genetree){
   
   #Gets a partially filled matrix with covariances from one tree 
   
-  tree_height <-max(nodeHeights(genetree))
+  tree_height <-max(phytools::nodeHeights(genetree))
   tips = genetree[["tip.label"]]
   len_tip = length(tips)
   
@@ -101,10 +109,11 @@ get_partial_cov_matrix <- function(genetree){
   for(j in 1:length(tip_combos[1,])){ #for each pairwise combo
     
     col <- tip_combos[,j] #current pairwise combo
-    mrca <- fastMRCA(genetree, col[1], col[2]) #most recent common ancestor of combo
-    mrca_height <- fastHeight(genetree, col[1], col[2]) #height of mrca from root
+    mrca <- phytools::fastMRCA(genetree, col[1], col[2]) #most recent common ancestor of combo
+    mrca_height <- phytools::fastHeight(genetree, col[1], col[2]) #height of mrca from root
     
     genetree_vcv[col[1], col[2]] <- mrca_height
+    genetree_vcv[col[2], col[1]] <- mrca_height
     
   }
   
@@ -157,6 +166,7 @@ trees_to_vcv <- function(tree_list) {
 }
 
 genetree_vcv <- trees_to_vcv(tree_list)
+print(genetree_vcv)
 
 
 
