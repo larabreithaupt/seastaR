@@ -73,21 +73,21 @@ trees_to_phylo_star <- function(genetrees){
   combined_trees$tip.label <- c("A", "B", "C") #leaf node labels 
   combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1) #branch lengths corresponding to traversals 
   
-  combined_vcv <- phytools::vcvPhylo(combined_trees, anc.nodes = FALSE) #variance-covariance matrix from our phylo object
+  combined_vcv <- ape::vcv(combined_trees) #variance-covariance matrix from our phylo object
   
   return(list(combined_vcv, combined_trees))
 }
 
-new_phylo <- trees_to_phylo_star(tree_list)
-print(new_phylo[[1]])
-print(det(new_phylo[[1]]))
+#new_phylo <- trees_to_phylo_star(tree_list)
+#print(new_phylo[[1]])
+#print(det(new_phylo[[1]]))
 
 
-tips <- c(1, 2, 3)
-names(tips) <- c("A", "B", "C")
+#tips <- c(1, 2, 3)
+#names(tips) <- c("A", "B", "C")
 
-anc <- phytools::anc.ML(new_phylo[[2]], tips, anc.nodes = FALSE)
-print(anc)
+#anc <- geiger::fitContinuous(new_phylo[[2]], tips)
+#print(anc)
 
 get_partial_cov_matrix <- function(genetree){
   

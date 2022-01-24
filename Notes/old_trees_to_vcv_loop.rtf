@@ -48,4 +48,70 @@
           \
         \}\
       \}\
-    \}}
+    \}\
+\
+\
+\
+#Function that takes list of gene trees as input \
+  #and returns a vcv and single phylo object summarizing them.\
+  #Currently hard-codes an example case, need to create\
+  #a generalized version. This function is the main function\
+  #of the program. \
+  \
+  \
+  \
+  \
+  \
+  \
+  \
+  trees_to_phylo_star <- function(genetrees)\{\
+\
+  #Function that takes list of gene trees as input \
+  #and returns a vcv and single phylo object summarizing them.\
+  #Currently hard-codes an example case, need to create\
+  #a generalized version. This function is the main function\
+  #of the program. \
+  \
+  \
+  \
+  \
+  \
+  \
+  \
+  \
+  \
+  \
+  #combined_trees <- list()\
+  #class(combined_trees) <- "phylo"\
+  \
+  #combined_trees$edge <- matrix(c(\
+  #  4,5, #Pre-order tree traversal that contains extra\
+  #  5,6, #nodes for covariances not described by a standard species \
+  #  6,3, #tree\
+  #  6,1,\
+  #  5,7,\
+  #  7,2,\
+  #  7,1, \
+  #  4,1), 8,2, byrow = TRUE)\
+  #combined_trees$Nnode <- 4 \
+  #combined_trees$node.label <- c(4,5,6,7) #internal node labels \
+  #combined_trees$tip.label <- c("A", "B", "C") #leaf node labels \
+  #combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1) #branch lengths corresponding to traversals \
+  \
+  #combined_vcv <- ape::vcv(combined_trees) #variance-covariance matrix from our phylo object\
+  \
+  #return(list(combined_vcv, combined_trees))\
+  \
+  \
+\}\
+\
+#new_phylo <- trees_to_phylo_star(tree_list)\
+#print(new_phylo[[1]])\
+#print(det(new_phylo[[1]]))\
+\
+\
+#tips <- c(1, 2, 3)\
+#names(tips) <- c("A", "B", "C")\
+\
+#anc <- geiger::fitContinuous(new_phylo[[2]], tips)\
+#print(anc)}
