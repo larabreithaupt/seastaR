@@ -2,98 +2,120 @@ remove(list=ls())
 library(ape)
 library(phytools)
 library(geiger)
+library(tidyverse)
 
-parse_input_file <- function(file_path){
+parse_input_file <- function(file_path, genetrees = TRUE){
 
   ### Reads input file, containing 
   ### gene trees in Newick format and
   ### their frequencues
   
-  iftree =FALSE
-  tree_list <- vector(mode = "list")
-  freqs_vector <- vector()
-  input_file = file(file_path, "r")
+
   
-  i <- 1
-  j <- 1
+  if (genetrees){
   
-  while (TRUE) {
+    iftree = FALSE
+    tree_list <- vector(mode = "list")
+    freqs_vector <- vector()
+    input_file = file(file_path, "r")
     
-    line = readLines(input_file, n = 1)
-    if (length(line) == 0){ #skip empty lines
-      break
+    i <- 1
+    j <- 1
+  
+    while (TRUE) {
+    
+      line = readLines(input_file, n = 1)
+      if (length(line) == 0){ #if no more lines, break out of loop
+        break
+      }
+    
+      if (startsWith(line, "(")){ #line containing a newick tree
+        tree <- read.tree(text = line)
+        tree_list[[i]] <- tree
+        i <- i + 1
+      }
+    
+      if (startsWith(line, "0")){ #line containing tree frequency 
+        freq <- as.double(line)
+        freqs_vector[j] <- freq
+        j <- j + 1
     }
     
-    if (startsWith(line, "(")){ #line containing a newick tree
-      tree <- read.tree(text = line)
-      tree_list[[i]] <- tree
-      i <- i + 1
+      tree_list[[i]] <- freqs_vector #add vector of tree freqs to end of list 
+    
     }
     
-    if (startsWith(line, "0")){ #line containing tree frequency 
-      freq <- as.double(line)
-      freqs_vector[j] <- freq
-      j <- j + 1
-    }
+    close(input_file)
     
-    tree_list[[i]] <- freqs_vector #add vector of tree freqs to end of list 
+    return(tree_list)
+    
+  } else{
+      
+    input_file = file(file_path, "r")
+    
+    text_line <- readLines(input_file, n = 1)
+    tree <- read.tree(text = text_line)
+
+    close(input_file)
+    return(tree)
+  }
+  
+}
+
+tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastaR/test_input_files/seastar_genetrees_test_input.txt", genetrees = TRUE)
+sptree <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastaR/test_input_files/seastar_sptree_test_input.txt", genetrees = FALSE)
+
+get_internal_branch <- function(triplet, sptree){
+  
+  triplet_mrca <- phytools::findMRCA(sptree, triplet)
+  print(triplet_mrca)
+  tips_pairwise <- combn(triplet, 2)
+  print(tips_pairwise)
+  
+  sister <- ""
+  sister_mrca <- 0
+    
+  for(i in 1:length(tips_pairwise[1,])){#for each pairwise combo
+    
+    combo <- tips_pairwise[,i]
+    
+    mrca <- phytools::findMRCA(sptree, combo)
+    
+    if(mrca > triplet_mrca){
+      
+      sister <- combo
+      sister_mrca <- mrca
+      
+    }
     
   }
-
-  close(input_file)
-  
-  return(tree_list)
+  print(sister_mrca)
   
 }
 
-tree_list <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seastaR/seastar_test_input.txt")
+internal <- get_internal_branch(c("sp4", "sp3", "sp1"), sptree)
 
-trees_to_phylo_star <- function(genetrees){
-
-  #Function that takes list of gene trees as input 
-  #and returns a vcv and single phylo object summarizing them.
-  #Currently hard-codes an example case, need to create
-  #a generalized version. This function is the main function
-  #of the program. 
+get_quartets <- function(sptree){
+  #pulls out the quartets and internal branch lengths
   
-  combined_trees <- list()
-  class(combined_trees) <- "phylo"
   
-  combined_trees$edge <- matrix(c(
-    4,5, #Pre-order tree traversal that contains extra
-    5,6, #nodes for covariances not described by a standard species 
-    6,3, #tree
-    6,1,
-    5,7,
-    7,2,
-    7,1, 
-    4,1), 8,2, byrow = TRUE)
-  combined_trees$Nnode <- 4 
-  combined_trees$node.label <- c(4,5,6,7) #internal node labels 
-  combined_trees$tip.label <- c("A", "B", "C") #leaf node labels 
-  combined_trees$edge.length <- c(0.5, 0.1, 0.4, 0.4, 0.3, 0.2, 0.2, 1) #branch lengths corresponding to traversals 
   
-  combined_vcv <- ape::vcv(combined_trees) #variance-covariance matrix from our phylo object
-  
-  return(list(combined_vcv, combined_trees))
 }
 
-#new_phylo <- trees_to_phylo_star(tree_list)
-#print(new_phylo[[1]])
-#print(det(new_phylo[[1]]))
+quartet <- get_quartets(tree_list)
 
 
-#tips <- c(1, 2, 3)
-#names(tips) <- c("A", "B", "C")
-
-#anc <- geiger::fitContinuous(new_phylo[[2]], tips)
-#print(anc)
+get_theory_matrix <- function(sptree){
+  
+  
+  
+}
 
 get_partial_cov_matrix <- function(genetree){
   
   #Gets a partially filled matrix with covariances from one tree 
   
-  tree_height <-max(phytools::nodeHeights(genetree))
+  tree_height <- max(phytools::nodeHeights(genetree))
   tips = genetree[["tip.label"]]
   len_tip = length(tips)
   
