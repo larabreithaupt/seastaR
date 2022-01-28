@@ -10,8 +10,6 @@ parse_input_file <- function(file_path, genetrees = TRUE){
   ### gene trees in Newick format and
   ### their frequencues
   
-
-  
   if (genetrees){
   
     iftree = FALSE
@@ -68,9 +66,10 @@ sptree <- parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/seastar/seast
 get_internal_branch <- function(triplet, sptree){
   
   triplet_mrca <- phytools::findMRCA(sptree, triplet)
-  print(triplet_mrca)
   tips_pairwise <- combn(triplet, 2)
-  print(tips_pairwise)
+  
+  internal <- 0
+
   
   sister <- ""
   sister_mrca <- 0
@@ -87,22 +86,56 @@ get_internal_branch <- function(triplet, sptree){
       sister_mrca <- mrca
       
     }
-    
   }
-  print(sister_mrca)
+  tree_edge <- sptree[["edge"]]
+  tree_edge_len <- sptree[["edge.length"]]
   
+  counter <- triplet_mrca
+  
+  for(j in 1:length(tree_edge_len)){ #iterating through node traversal
+    
+    
+    if (counter == sister_mrca){
+      
+      break
+      
+    }
+      
+    else if ((tree_edge[j, 1] == (counter)) && (tree_edge[j, 2] == (counter + 1))){ #traversal from parent node to our MRCA
+      
+      internal <- internal + tree_edge_len[j] #internal branch length
+      
+      counter <- counter + 1
+    }
+  }
+  return(internal)
 }
 
-internal <- get_internal_branch(c("sp4", "sp3", "sp1"), sptree)
+internal <- get_internal_branch(c("sp1", "sp2", "sp3"), sptree)
 
-get_quartets <- function(sptree){
+get_triplet_branches <- function(sptree){
   #pulls out the quartets and internal branch lengths
   
+  triplet_internals <- list()
   
+  tip_labels <- sptree[["tip.label"]]
+  triplets <- combn(tip_labels, 3)
   
+  for(i in 1:length(triplets[1, ])){
+    
+    tip_concat <- paste(triplets[, i], collapse = "")
+    print(tip_concat)
+    
+    len <- get_internal_branch(triplets[, i], sptree)
+    
+    triplet_internals[tip_concat] = len
+    
+  }
+  
+  print(triplet_internals)
 }
 
-quartet <- get_quartets(tree_list)
+triplet <- get_triplet_branches(sptree)
 
 
 get_theory_matrix <- function(sptree){
@@ -188,7 +221,7 @@ trees_to_vcv <- function(tree_list) {
 }
 
 genetree_vcv <- trees_to_vcv(tree_list)
-print(genetree_vcv)
+#print(genetree_vcv)
 
 
 
