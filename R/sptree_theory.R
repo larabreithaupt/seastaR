@@ -141,7 +141,7 @@ triplet_theory <- function(tau, height, triplet) {
   return(partial_matrix)
 }
 
-get_theory_matrix <- function(sptree){
+get_submatrices <- function(sptree){
   
   #This function builds the full variance-covariance matrix
   #by using theory to calculate submatrices for each triplet.
@@ -153,18 +153,58 @@ get_theory_matrix <- function(sptree){
   branches_df <- get_triplet_branches(sptree)
   #print(branches_df)
   
-  #Initialize Matrix
-  theory_matrix <- matrix(0, len_tip, len_tip)
-  rownames(theory_matrix) <- tips
-  colnames(theory_matrix) <- tips
+  sub_matrices <- list()
   
-  for (i in 1:length(branches_df[1, ])){
+  #Get Submatrices
+  for (i in 1:length(branches_df[, 1])){
     
     sub_matrix <- triplet_theory(as.numeric(branches_df[i, 1]), 
                                  as.numeric(branches_df[i, 2]), 
                                  branches_df[i, 3])
-    
-    print(sub_matrix)
+    sub_matrices[[i]] <- sub_matrix
+    #print(sub_matrix)
   }
   
+  return(sub_matrices)
+  
+}
+
+get_full_matrix <- function(sptree){
+  
+  tips = sptree[["tip.label"]]
+  len_tip = length(tips)
+  combs <- combn(tips, 2)
+  
+  #Initialize Matrix
+  full_matrix <- matrix(0, len_tip, len_tip)
+  rownames(full_matrix) <- tips
+  colnames(full_matrix) <- tips
+  
+  sub_matrices <- get_submatrices(sptree)
+  
+  for(i in 1:length(sub_matrices)){
+    sub_matrix <- sub_matrices[[i]]
+    
+    for (j in 1:length(combs[1, ])){
+      
+      combo <- (combs[, j])
+      if (combo[1] %in% rownames(sub_matrix) & combo[2] %in% rownames(sub_matrix)){
+        val <- sub_matrix[combo[1], combo[2]]
+        full_matrix[combo[1], combo[2]] <- full_matrix[combo[1], combo[2]] + val
+        full_matrix[combo[2], combo[1]] <- full_matrix[combo[2], combo[1]] + val
+      }
+    }
+    
+    for(k in 1:length(tips)){
+      if(tips[k] %in% rownames(sub_matrix)){
+        val <- sub_matrix[tips[k], tips[k]]
+        full_matrix[tips[k], tips[k]] <- full_matrix[tips[k], tips[k]] + val
+      }
+    }
+  }
+  
+  full_matrix <- full_matrix / length(sub_matrices)
+  
+  print(full_matrix)
+  return(full_matrix)
 }

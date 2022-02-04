@@ -14,14 +14,12 @@ sptree <- lib$tools$parse_input_file("~/Downloads/Hahn Lab Pruning Algorithm/sea
 
 triplet_branch <- lib$sptree_theory$get_internal_branch(c("sp1", "sp2", "sp3"), sptree)
 
-
-#This part isn't working
 triplets <- lib$sptree_theory$get_triplet_branches(sptree)
-final_matrix <- lib$sptree_theory$get_theory_matrix(sptree)
+final_matrix <- lib$sptree_theory$get_submatrices(sptree)
 
 #This works fine
 genetree_vcv <- lib$estimated_trees$trees_to_vcv(tree_list)
-#print(genetree_vcv)
 
+full_matrix <- lib$sptree_theory$get_full_matrix(sptree)
 
 
