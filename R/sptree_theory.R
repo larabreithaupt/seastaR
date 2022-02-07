@@ -69,7 +69,6 @@ get_triplet_branches <- function(sptree){
   for(i in 1:length(triplets[1, ])){
     
     internal_branch <- get_internal_branch(triplets[, i], sptree)
-    #print(internal_branch)
     
     len <- internal_branch[1]
     sisters <- internal_branch[3]
@@ -105,7 +104,6 @@ triplet_theory <- function(tau, height, triplet) {
                              0, 0, 0, 
                              0, 0, 0), nrow = 3, ncol = 3)
   
-  # print(triplet)
   names <- strsplit(as.character(triplet), split = "_")[[1]]
   rownames(partial_matrix) <- names
   colnames(partial_matrix) <- names
@@ -151,8 +149,7 @@ get_submatrices <- function(sptree){
   len_tip = length(tips)
   
   branches_df <- get_triplet_branches(sptree)
-  #print(branches_df)
-  
+
   sub_matrices <- list()
   
   #Get Submatrices
@@ -162,7 +159,6 @@ get_submatrices <- function(sptree){
                                  as.numeric(branches_df[i, 2]), 
                                  branches_df[i, 3])
     sub_matrices[[i]] <- sub_matrix
-    #print(sub_matrix)
   }
   
   return(sub_matrices)
@@ -205,6 +201,5 @@ get_full_matrix <- function(sptree){
   
   full_matrix <- full_matrix / length(sub_matrices)
   
-  print(full_matrix)
   return(full_matrix)
 }
