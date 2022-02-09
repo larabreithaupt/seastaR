@@ -26,7 +26,6 @@ full_matrix <- lib$sptree_theory$get_full_matrix(sptree)
 
 trait <- lib$inference$simulate_traits(1000, full_matrix, 1)
 sigma_2_est <- apply(trait, 1, lib$inference$sigma2_inference, var_covar = full_matrix)
-print(mean(sigma_2_est))
 sigma_2 <- lib$inference$sigma2_inference(full_matrix, trait)
 
 
