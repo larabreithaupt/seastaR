@@ -1,32 +1,33 @@
-\name{parse_input_file}
-\alias{parse_input_file}
+\name{get_internal_branch}
+\alias{get_internal_branch}
 
 \title{
-parse_input_file
+get_internal_branch
 }
 \description{
-    Function to parse the input file.
+    Function to get the internal branch length contained in a single specified
+    triplet, which is pulled out of the larger species tree
 }
 \usage{
-    parse_input_file(file_path, genetrees=TRUE)
+    get_internal_branch(triplet, sptree)
 }
 
 \arguments{
-  \item{file_path}{
-      Path to the input file; ensure that last line of file has line break
+  \item{triplet}{
+    Triplet pulled from species tree input
 }
-  \item{genetrees}{
-      Boolean flag to specify genetree vs species tree input; defaults to true
+  \item{sptree}{
+      Species tree phylo object produced from file parser (parse_input_file); species tree is in coalescent units
   }
 }
 \details{
-    Species tree input is a single line Newick string and genetree input is a Nexus file input     with the genetrees and the genetree frequencies under seperate headers
+    this function will be called on each triplet to get the internal branch from each triplet in the species tree
 }
 \value{
-    If genetrees is false, it returns a single phylo object and if true, it returns a list of    phylo objects where the last element of the list is a vector of the genetree frequencies
+    returns a list containing the length of the internal branch, the final height (the speceies tree height - the triplet height) and a string showing the sister taxa from the triplet
 }
 \references{
-        Paradis E, Schliep K (2019). “ape 5.0: an environment for modern phylogenetics and        evolutionary analyses in R.” Bioinformatics, 35, 526-528.
+    NEED TO ADD
 }
 \author{
     Lara Breithaupt and Mark Hibbins
@@ -34,10 +35,6 @@ parse_input_file
 
 }
 \examples{
-sptree_phylo_object <- parse_input_file(test_input_files/seastar_sptree_test_input.txt, genetrees = FALSE)
-
-genetree_phylo_object_list <- parse_input_file(test_input_files/seastar_genetrees_test_input)
-{
-  }
+  internal_branch <- get_internal_branch(triplets[, i], sptree)
 }
 
