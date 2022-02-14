@@ -27,5 +27,5 @@ get_full_matrix
 
 }
 \examples{
-  full_matrix <- get_full_matrix(sptree)
+  full_matrix <- get_full_matrix(test_input_files/seastar_sptree_test_input.txt)
 }

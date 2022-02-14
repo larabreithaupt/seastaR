@@ -27,5 +27,5 @@ get_submatrices
 }
 
 \examples{
-    sub_matrices <- get_submatrices(sptree)
+    sub_matrices <- get_submatrices(test_input_files/seastar_sptree_test_input.txt)
 }

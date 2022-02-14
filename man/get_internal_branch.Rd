@@ -32,9 +32,7 @@ get_internal_branch
 \author{
     Lara Breithaupt and Mark Hibbins
 }
-
-}
 \examples{
-  internal_branch <- get_internal_branch(triplets[, i], sptree)
+  internal_branch <- get_internal_branch(triplets[, i], test_input_files/seastar_sptree_test_input.txt)
 }
 

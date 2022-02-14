@@ -27,6 +27,6 @@ get_triplet_branches
 }
 
 \examples{
-    branches_df <- get_triplet_branches(sptree)
+    branches_df <- get_triplet_branches(test_input_files/seastar_sptree_test_input.txt)
 }
 
