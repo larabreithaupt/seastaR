@@ -5,7 +5,7 @@
 get_full_matrix
 }
 \description{
-    This function returns the final species tree matrix
+    This function builds a covariance matrix from an input tree using expectations from the multispecies coalescent
 }
 \usage{
     get_full_matrix(sptree)
@@ -13,13 +13,13 @@ get_full_matrix
 
 \arguments{
   \item{sptree}{
-     Species tree phylo object produced from file parser (parse_input_file); species tree is in coalescent units
+     Species tree phylo object. Must be ultrametric and in coalescent units
 }
 \value{
-  returns a final nxn matrix containing variance and covariance values
+  Returns a ntaxa x ntaxa matrix containing variance and covariance values for each pair of species
 }
 \references{
-  NEED TO ADD
+  Revell LJ (2012). “phytools: An R package for phylogenetic comparative biology (and other things).” Methods in Ecology and Evolution, 3, 217-223.
 }
 \author{
     Lara Breithaupt and Mark Hibbins
@@ -27,5 +27,6 @@ get_full_matrix
 
 }
 \examples{
-  full_matrix <- get_full_matrix(test_input_files/seastar_sptree_test_input.txt)
+  sptree <- parse_input_file(test_input_files/seastar_sptree_test_input.txt, genetrees = FALSE)
+  full_matrix <- get_full_matrix(sptree)
 }

@@ -5,7 +5,7 @@
 trees_to_vcv
 }
 \description{
-    Our implementation for constructing a phylogenetic covariance matrix from a set of input gene trees
+    Builds a phylogenetic variance/covariance matrix from a list of input gene trees. 
 }
 \usage{
     trees_to_vcv(tree_list)
@@ -13,17 +13,17 @@ trees_to_vcv
 
 \arguments{
   \item{tree_list}{
-      List of gene tree phylogenetic objects produced from file parser (parse_input_file); last element of list is a vector of             genetree frequencies
+      List of phylo objects; last element of list must be a vector of genetree frequencies. Gene trees must be ultrametric. 
   }
 }
 \details{
-    this function will take a list of genetrees and call get_partial_cov_matrix to get the partial matrices from each genetree to        contstruct the final matrix
+    This function will take a list of genetrees and call get_partial_cov_matrix to get the partial matrices from each genetree to construct the final matrix.
 }
 \value{
-    returns an n x n matrix where n is the number of taxa in the genetree; uses genetree frequencies to scale covariances
+    Returns an n x n matrix where n is the number of taxa.
 }
 \references{
-    NEED TO ADD
+    Revell LJ (2012). “phytools: An R package for phylogenetic comparative biology (and other things).” Methods in Ecology and Evolution, 3, 217-223.
 }
 \author{
     Lara Breithaupt and Mark Hibbins
@@ -31,6 +31,7 @@ trees_to_vcv
 
 }
 \examples{
-  final_genetree_matrix <- trees_to_vcv(test_input_files/seastar_genetrees_test_input.txt)
+  genetree_list <- parse_input_file(test_input_files/seastar_genetrees_test_input.txt)
+  genetree_cov_matrix <- trees_to_vcv(genetree_list)
 }
 

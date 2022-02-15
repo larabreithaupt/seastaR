@@ -5,7 +5,7 @@
 triplet_theory
 }
 \description{
-    This function builds a 3x3 submatrix constructed using the multispecies coalescent on the input triplet
+    This function builds a 3x3 submatrix using the multispecies coalescent on the input triplet
 }
 \usage{
     triplet_theory(tau, height, triplet)
@@ -13,30 +13,28 @@ triplet_theory
 
 \arguments{
   \item{tau}{
-     the divergence time measured in expected number of mutations of the triplet; used to compute Lineage Sorting and Incomplete          Lineage Sorting to calculate variances and covariances
+     The triplet internal branch in coalescent units
   }
   \item{height}{
-     height of the triplet; used to compute Lineage Sorting and Incomplete Lineage Sorting to calculate variances and covariances
+     The height of the triplet MRCA in coalescent units
   }
   \item{triplet}{
-     triplet from the species tree
+     A character vector of length 3, containing the name of each taxon in the triplet. Sister taxa must be listed first.
   }
 }
 \details{
-    the input values will be pulled from the data frame produced in get_triplet_branches, and called on each value in the dataframe      that each include a tau value, a height, and a triplet
+    When using get_full_matrix, this function is called internally to construct the partial covariance matrix for each triplet.
 }
 \value{
-    returns a partial matrix that will be used to construct the final species tree matrix
+    Returns a partial matrix that will be used to construct the final matrix for all species
 }
 \references{
-    NEED TO ADD
+    Revell LJ (2012). “phytools: An R package for phylogenetic comparative biology (and other things).” Methods in Ecology and Evolution, 3, 217-223.
 }
 \author{
     Lara Breithaupt and Mark Hibbins
 }
 
 \examples{
-    sub_matrix <- triplet_theory(as.numeric(branches_df[i, 1]),
-                                 as.numeric(branches_df[i, 2]),
-                                 branches_df[i, 3])
+    sub_matrix <- triplet_theory(0.87, 2.2, c("sp4", "sp3", "sp2"))
 }
