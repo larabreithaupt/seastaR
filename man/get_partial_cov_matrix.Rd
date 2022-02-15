@@ -5,7 +5,7 @@
 get_partial_cov_matrix
 }
 \description{
-    Gets a partially filled matrix with covariances from one genetree
+    Gets a partially filled matrix with covariances from one gene tree
 }
 \usage{
     get_partial_cov_matrix(genetree)
@@ -13,22 +13,23 @@ get_partial_cov_matrix
 
 \arguments{
   \item{genetree}{
-      Singular genetree is a phylogenetic object
+      A gene tree phylo object. Must be ultrametric. 
   }
 }
 \details{
-    this function will be called on each genetree in the list of genetree phylogenetic objects to construct the full matrix
+    When trees_to_vcv is used, this function is called internally to fill the part of the matrix corresponding to each gene tree in the input list.
 }
 \value{
-    returns a phylogenetic variance-covariance or correlation matrix of size #taxa x #taxa
+    Returns a phylogenetic variance-covariance matrix of size #taxa x #taxa
 }
 \references{
-    NEED TO ADD
+    Revell LJ (2012). “phytools: An R package for phylogenetic comparative biology (and other things).” Methods in Ecology and Evolution, 3, 217-223.
 }
 \author{
     Lara Breithaupt and Mark Hibbins
 }
 \examples{
-    partial_matrix <- get_partial_cov_matrix(test_input_files/seastar_genetrees_test_input.txt[[i]])
+    genetree_list <- parse_input_file(test_input_files/seastar_genetrees_test_input.txt)
+    partial_matrix <- get_partial_cov_matrix(genetree_list[[1]])
 }
 

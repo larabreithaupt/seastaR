@@ -14,25 +14,26 @@ get_internal_branch
 
 \arguments{
   \item{triplet}{
-    Triplet pulled from species tree input
+    A character vector of length 3 containing the name of each taxon in the triplet. The sister taxa in the tripet should be listed first.
 }
   \item{sptree}{
-      Species tree phylo object produced from file parser (parse_input_file); species tree is in coalescent units
+    Species tree phylo object. Must be ultrametric and in coalescent units.
   }
 }
 \details{
-    this function will be called on each triplet to get the internal branch from each triplet in the species tree
+    When get_full_matrix is used, this function is called internally on all triplets contained in the species tree to get their internal branches. 
 }
 \value{
-    returns a list containing the length of the internal branch, the final height (the speceies tree height - the triplet height) and a string showing the sister taxa from the triplet
+    A list with three elements: the length of the internal branch, the node height of the triplet MRCA, and a character vector of length 2 containing the names of the sister taxa in the triplet.
 }
 \references{
-    NEED TO ADD
+    Revell LJ (2012). “phytools: An R package for phylogenetic comparative biology (and other things).” Methods in Ecology and Evolution, 3, 217-223.
 }
 \author{
     Lara Breithaupt and Mark Hibbins
 }
 \examples{
-  internal_branch <- get_internal_branch(triplets[, i], test_input_files/seastar_sptree_test_input.txt)
+  sptree <- parse_input_file(test_input_files/seastar_sptree_test_input.txt, genetrees = FALSE)
+  internal_branch <- get_internal_branch(c("sp3", "sp4", "sp1"), sptree)
 }
 
