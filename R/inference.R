@@ -1,4 +1,4 @@
-import(MASS)
+#import(MASS)
 
 sigma2_inference <- function(var_covar, trait){
 
