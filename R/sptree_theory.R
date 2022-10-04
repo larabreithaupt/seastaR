@@ -150,16 +150,19 @@ get_submatrices <- function(sptree){
   branches_df <- get_triplet_branches(sptree)
 
   sub_matrices <- list()
-
+  triplet_counter = 0
   #Get Submatrices
   for (i in 1:length(branches_df[, 1])){
+    #check if expected rate of discordance < 5%
+    if (branches_df[i, 1] < 3){
+      triplet_counter = triplet_counter + 1
 
-    sub_matrix <- triplet_theory(as.numeric(branches_df[i, 1]),
+      sub_matrix <- triplet_theory(as.numeric(branches_df[i, 1]),
                                  as.numeric(branches_df[i, 2]),
                                  branches_df[i, 3])
-    sub_matrices[[i]] <- sub_matrix
+      sub_matrices[[triplet_counter]] <- sub_matrix
+    }
   }
-
   return(sub_matrices)
 
 }
