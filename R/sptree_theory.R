@@ -154,14 +154,14 @@ get_submatrices <- function(sptree){
   #Get Submatrices
   for (i in 1:length(branches_df[, 1])){
     #check if expected rate of discordance < 5%
-    if (branches_df[i, 1] < 3){
+    # if (branches_df[i, 1] < 3){
       triplet_counter = triplet_counter + 1
 
       sub_matrix <- triplet_theory(as.numeric(branches_df[i, 1]),
                                  as.numeric(branches_df[i, 2]),
                                  branches_df[i, 3])
-      sub_matrices[[triplet_counter]] <- sub_matrix
-    }
+     sub_matrices[[triplet_counter]] <- sub_matrix
+    #}
   }
   return(sub_matrices)
 
@@ -178,30 +178,43 @@ get_full_matrix <- function(sptree){
   rownames(full_matrix) <- tips
   colnames(full_matrix) <- tips
 
+  #Initialize Counter Matrix
+  counter_matrix <- matrix(0, len_tip, len_tip)
+  rownames(counter_matrix) <- tips
+  colnames(counter_matrix) <- tips
+
   sub_matrices <- get_submatrices(sptree)
 
   for(i in 1:length(sub_matrices)){
+    #loop through submatrices
     sub_matrix <- sub_matrices[[i]]
 
     for (j in 1:length(combs[1, ])){
-
+    #loop through the pairwise combos of species
+    #off diagonals
       combo <- (combs[, j])
       if (combo[1] %in% rownames(sub_matrix) & combo[2] %in% rownames(sub_matrix)){
         val <- sub_matrix[combo[1], combo[2]]
         full_matrix[combo[1], combo[2]] <- full_matrix[combo[1], combo[2]] + val
         full_matrix[combo[2], combo[1]] <- full_matrix[combo[2], combo[1]] + val
+
+        counter_matrix[combo[2], combo[1]] <- counter_matrix[combo[2], combo[1]] + 1
+        counter_matrix[combo[1], combo[2]] <- counter_matrix[combo[1], combo[2]] + 1
       }
     }
 
     for(k in 1:length(tips)){
+      #loop through tips
       if(tips[k] %in% rownames(sub_matrix)){
         val <- sub_matrix[tips[k], tips[k]]
         full_matrix[tips[k], tips[k]] <- full_matrix[tips[k], tips[k]] + val
+
+        counter_matrix[tips[k], tips[k]] <- counter_matrix[tips[k], tips[k]] + 1
       }
     }
   }
 
-  full_matrix <- full_matrix / length(sub_matrices)
+  full_matrix <- full_matrix / counter_matrix
 
   return(full_matrix)
 }
