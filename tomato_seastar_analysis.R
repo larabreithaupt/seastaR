@@ -52,7 +52,7 @@ low_ils_traits <- low_ils_traits %>% dplyr::slice(match(low_ils_accession, Acces
 high_ils_traits <- high_ils_traits %>% dplyr::slice(match(high_ils_accession, AccessionID))
 
 # estimate sigma^2 value
-
+#low_ils_CD_C_s2 <- sigma2_inference(low_ils_C, unlist(low_ils_traits[, 2]))
 low_ils_AL_C_s2 <- sigma2_inference(low_ils_C, unlist(low_ils_traits[, 3]))
 
 
