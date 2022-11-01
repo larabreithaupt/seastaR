@@ -168,7 +168,6 @@ get_submatrices <- function(sptree){
 }
 
 get_full_matrix <- function(sptree){
-
   tips = sptree[["tip.label"]]
   len_tip = length(tips)
   combs <- combn(tips, 2)
