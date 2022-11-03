@@ -3,23 +3,7 @@ remove(list=ls())
 library("seastaR")
 library("phytools")
 library("tidyverse")
-
-#sigma function
-sigma2_inference_test <- function(var_covar, trait){
-  num_taxa <- length(var_covar[, 1])
-  if (num_taxa == length(trait)){
-
-    one <- c(rep(1, num_taxa))
-
-    zhat_root <- (t(one)%*%solve(var_covar)%*%one)%*%(t(one)%*%solve(var_covar)%*%trait)
-    sigma2 <- ((t(trait - zhat_root*one))%*%solve(var_covar)%*%(trait - zhat_root*one))/(num_taxa-1)
-
-    return(sigma2)
-  }
-  else{
-    stop("ERROR, trait vector is not the length of the number of taxa")
-  }
-}
+library("patchwork")
 
 # load trait matrix and newick string to tree
 tomato_traits <- read.csv("/Users/larabreithaupt/Things/Hahn_Lab_Pruning_Algorithm/seastar/tomato_test/flower_morphometrics2.csv")
@@ -68,14 +52,48 @@ low_ils_traits <- low_ils_traits %>% dplyr::slice(match(low_ils_accession, Acces
 high_ils_traits <- high_ils_traits %>% dplyr::slice(match(high_ils_accession, AccessionID))
 
 # estimate sigma^2 value
-low_ils_CD_C_s2 <- sigma2_inference_test(low_ils_C, unlist(low_ils_traits[, 2]))
-#low_ils_AL_C_s2 <- sigma2_inference_test(low_ils_C, unlist(low_ils_traits[, 3]))
+low_ils_CD_C_s2 <- sigma2_inference(low_ils_C, unlist(low_ils_traits[, 2]))
+low_ils_AL_C_s2 <- sigma2_inference(low_ils_C, unlist(low_ils_traits[, 3]))
+low_ils_SL_C_s2 <- sigma2_inference(low_ils_C, unlist(low_ils_traits[, 4]))
 
-#low_ils_CD_Cstar_s2 <- sigma2_inference_test(low_ils_Cstar, unlist(low_ils_traits[, 2]))
-
-low_ils_traits_test <- setNames(as.numeric(unlist(low_ils_traits[, 2])), low_ils_accession)
-
-low_ils_ape_s2 <- phytools::anc.ML(pruned_tree_low, low_ils_traits_test)
+low_ils_CD_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(low_ils_traits[, 2]))
+low_ils_AL_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(low_ils_traits[, 3]))
+low_ils_SL_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(low_ils_traits[, 4]))
 
 
+high_ils_CD_C_s2 <- sigma2_inference(low_ils_C, unlist(high_ils_traits[, 2]))
+high_ils_AL_C_s2 <- sigma2_inference(low_ils_C, unlist(high_ils_traits[, 3]))
+high_ils_SL_C_s2 <- sigma2_inference(low_ils_C, unlist(high_ils_traits[, 4]))
+
+high_ils_CD_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(high_ils_traits[, 2]))
+high_ils_AL_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(high_ils_traits[, 3]))
+high_ils_SL_Cstar_s2 <- sigma2_inference(low_ils_Cstar, unlist(high_ils_traits[, 4]))
+
+
+CD_data <- data.frame(group=rep(c("Species Tree", "Gene Tree"),each=2),
+                     names=c("Low ILS", "High ILS"),
+                     vals=c(low_ils_CD_C_s2, high_ils_CD_C_s2, low_ils_CD_Cstar_s2, high_ils_CD_Cstar_s2))
+
+CD <- ggplot(CD_data, aes(x=names, y=vals, fill=group)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "Corolla Diameter", x = "Knot", y = "Rate Estimate", fill = "Method")
+
+
+AL_data <- data.frame(group=rep(c("Species Tree", "Gene Tree"),each=2),
+                      names=c("Low ILS", "High ILS"),
+                      vals=c(low_ils_AL_C_s2, high_ils_AL_C_s2, low_ils_AL_Cstar_s2, high_ils_AL_Cstar_s2))
+
+AL <- ggplot(AL_data, aes(x=names, y=vals, fill=group)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "Anther Length", x = "Knot", y = "Rate Estimate", fill = "Method")
+
+SL_data <- data.frame(group=rep(c("Species Tree", "Gene Tree"),each=2),
+                      names=c("Low ILS", "High ILS"),
+                      vals=c(low_ils_SL_C_s2, high_ils_SL_C_s2, low_ils_SL_Cstar_s2, high_ils_SL_Cstar_s2))
+
+SL <- ggplot(SL_data, aes(x=names, y=vals, fill=group)) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "Stigma Length", x = "Knot", y = "Rate Estimate", fill = "Method")
+
+CD / AL / SL
 
