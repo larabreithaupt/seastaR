@@ -2,28 +2,29 @@
 
 Source code for the R package seastaR, written by Lara Breithaupt and Mark Hibbins (see Hibbins et al. 2022). This package builds a gene tree variance-covariance matrix that can be used for downstream phylogenetic comparative analyses. Also included is a trait simulator and a function for maximum-likelihood estimation of the evolutionary rate.
 
+## Installation 
+
+Install from GitHub with `devtools::install_github("larabreithaupt/seastaR")`.
+
 ## Usage example
 
-See below for a basic usage example highlighting the main functions: 
+See below for a basic usage example highlighting the main functions. First we load in a species phylogeny in coalescent units:
 
     > library(seastaR)
     > library(ape)
-    > 
-    > ### EXample usage for a species tree in coalescent units 
-    > 
-    > #Load in the tree, in Newick format
     > sptree_example <- seastaR::parse_input_file("tests/seastaR_sptree_example.txt", genetrees = FALSE)
-    > 
-    > #Build covariance matrices 
-    > 
+    
+Next we construct both a standard species tree covariance matrix using ape, and a gene tree covariance matrix using our get_full_matrix() approach, which breaks the tree down into triplets and uses theory to build the matrix:
+
     > C_matrix <- ape::vcv(sptree_example) #Standard species tree matrix 
     > Cstar_matrix <- seastaR::get_full_matrix(sptree_example) #Gene tree matrix 
-    > 
-    > #Simulate a test trait from gene tree matrix 
-    > 
+
+We can simulate a test trait from the gene tree covariance matrix:
+
     > test_trait <- seastaR::simulate_traits(1, Cstar_matrix, 1)
-    > 
-    > #Estimate rate 
+
+Finally, we use our implementation of the maximum-likelihood estimator from O'Meara et al. 2006 to estimate the evolutionary rate:
+
     > sptree_rate <- seastaR::sigma2_inference(C_matrix, test_trait) #Standard estimate
     > sptree_rate
              [,1]
@@ -32,24 +33,26 @@ See below for a basic usage example highlighting the main functions:
     > genetree_rate
              [,1]
     [1,] 1.188734
-    > 
-    > ### Example usage for a set of input gene trees 
-    > 
-    > #Load in gene tree set 
+
+We can do a similar analyses using a specified set of input gene trees instead. First we read the input file:
+
     > genetree_example <- seastaR::parse_input_file("tests/seastar_genetrees_example.txt", genetrees = TRUE)
-    > 
-    > #Get gene tree covariance matrix 
-    > 
+
+Then we use trees_to_vcv() to construct the gene tree covariance matrix by weighting all the branches of the input gene trees: 
+
     > Cstar_matrix <- seastaR::trees_to_vcv(genetree_example)
     > Cstar_matrix 
              sp2      sp3      sp4
     sp2 2.382268 0.183000 0.183000
     sp3 0.183000 2.382268 0.782830
     sp4 0.183000 0.782830 2.382268
-    > 
-    > #Simulate a test trait 
+
+Simulate a test trait:
+
     > test_trait <- seastaR::simulate_traits(1, Cstar_matrix, 1)
-    > 
+
+And estimate the evolutionary rate: 
+
     > #Rate estimate 
     > genetree_rate <- seastaR::sigma2_inference(Cstar_matrix, test_trait) #Gene tree estimate
     > genetree_rate
