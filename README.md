@@ -1,6 +1,6 @@
 # seastaR
 
-Source code for the R package seastaR, written by Lara Breithaupt and Mark Hibbins (see Hibbins et al. 2022). This package builds a gene tree variance-covariance matrix that can be used for downstream phylogenetic comparative analyses. Also included is a trait simulator and a function for maximum-likelihood estimation of the evolutionary rate.
+Source code for the R package `seastaR`, written by Lara Breithaupt and Mark Hibbins (see Hibbins et al. 2022). This package builds a gene tree variance-covariance matrix that can be used for downstream phylogenetic comparative analyses. Also included is a trait simulator and a function for maximum-likelihood estimation of the evolutionary rate.
 
 ## Installation 
 
@@ -14,7 +14,7 @@ See below for a basic usage example highlighting the main functions. First we lo
     > library(ape)
     > sptree_example <- seastaR::parse_input_file("tests/seastaR_sptree_example.txt", genetrees = FALSE)
     
-Next we construct both a standard species tree covariance matrix using ape, and a gene tree covariance matrix using our get_full_matrix() approach, which breaks the tree down into triplets and uses theory to build the matrix:
+Next we construct both a standard species tree covariance matrix using ape, and a gene tree covariance matrix using our `get_full_matrix()` approach, which breaks the tree down into triplets and uses theory to build the matrix:
 
     > C_matrix <- ape::vcv(sptree_example) #Standard species tree matrix 
     > Cstar_matrix <- seastaR::get_full_matrix(sptree_example) #Gene tree matrix 
@@ -38,7 +38,7 @@ We can do a similar analyses using a specified set of input gene trees instead. 
 
     > genetree_example <- seastaR::parse_input_file("tests/seastar_genetrees_example.txt", genetrees = TRUE)
 
-Then we use trees_to_vcv() to construct the gene tree covariance matrix by weighting all the branches of the input gene trees: 
+Then we use `trees_to_vcv()` to construct the gene tree covariance matrix by weighting all the branches of the input gene trees: 
 
     > Cstar_matrix <- seastaR::trees_to_vcv(genetree_example)
     > Cstar_matrix 
@@ -61,4 +61,4 @@ And estimate the evolutionary rate:
 
 ## Analyses
 
-The analyses/ folder contains several scripts used for analyses in Hibbins et al. 2022. accuracy_ML_est.R tests the accuracy of the gene tree covariance matrix method using simulations and generated the results in Figure 4A. gt_error_ML_est.R tested the effects of gene tree estimation error on the covariance matrix method using simulations, and generated the results in Figure 5A. tomato_seastar_analysis.R uses seastaR to estimate evolutionary rates for empirical tomato floral traits, and generated the results in Figure 6A. 
+The `analyses/` folder contains several scripts used for analyses in Hibbins et al. 2022. `accuracy_ML_est.R` tests the accuracy of the gene tree covariance matrix method using simulations and generated the results in Figure 4A. `gt_error_ML_est.R` tested the effects of gene tree estimation error on the covariance matrix method using simulations, and generated the results in Figure 5A. `tomato_seastar_analysis.R` uses seastaR to estimate evolutionary rates for empirical tomato floral traits, and generated the results in Figure 6A. 
