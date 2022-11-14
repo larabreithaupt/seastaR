@@ -29,7 +29,6 @@ trees_to_vcv
     Lara Breithaupt and Mark Hibbins
 }
 
-}
 \examples{
   genetree_list <- parse_input_file(test_input_files/seastar_genetrees_test_input.txt)
   genetree_cov_matrix <- trees_to_vcv(genetree_list)
