@@ -14,6 +14,7 @@ get_full_matrix
 \arguments{
   \item{sptree}{
      Species tree phylo object. Must be ultrametric and in coalescent units
+    }
 }
 \value{
   Returns a ntaxa x ntaxa matrix containing variance and covariance values for each pair of species
