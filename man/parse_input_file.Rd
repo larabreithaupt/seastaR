@@ -32,7 +32,6 @@ parse_input_file
     Lara Breithaupt and Mark Hibbins
 }
 
-}
 \examples{
 sptree <- parse_input_file(test_input_files/seastar_sptree_test_input.txt, genetrees = FALSE)
 
