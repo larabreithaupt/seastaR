@@ -1,0 +1,39 @@
+\name{trait_likelihood_surface}
+\alias{trait_likelihood_surface}
+
+\title{
+trait_likelihood_surface
+}
+\description{
+    Calculates the trait likelihood surface of a trait over a thousand equally spaced sigma squared values between the specified bounds given the trait, variance covariance matrix as input.
+}
+\usage{
+    trait_likelihood_surface(trait, var_covar, lower_sigma2, higher_sigma2)
+}
+
+\arguments{
+  \item{lower_sigma2}{
+    lower bound of sigma squared values
+  }
+  \item{higher_sigma2}{
+    upper bound of sigma squared values
+  }
+  \item{trait}{
+    a numeric vector of size #taxa that include the trait values of each taxon; the order of the values in the vector must match the order of the rows in the variance, covariance matrix
+  }
+  \item{var_covar}{
+    variance, covariance matrix that is #taxa x #taxa in size
+  }
+}
+\value{
+    Returns a vector of negative log-likelihood values
+}
+
+\author{
+    Lara Breithaupt and Mark Hibbins
+}
+
+\examples{
+  test <- trait_likelihood_surface(test_trait, Cstar_matrix, 1, 100)
+}
+

@@ -1,0 +1,41 @@
+\name{sigma2_likelihood}
+\alias{sigma2_likelihood}
+
+\title{
+sigma2_likelihood
+}
+\description{
+    Calculates the negaitve log-likelihood of a single trait, given a variance covariance matrix and a sigma squared value. Uses the analytical likelihood formula (equation 3) from O'Meara et al. 2006.
+}
+\usage{
+    sigma2_likelihood(sigma2, trait, var_covar)
+}
+
+\arguments{
+  \item{sigma2}{
+    sigma squared value
+  }
+  \item{trait}{
+    a numeric vector of size #taxa that include the trait values of each taxon; the order of the values in the vector must match the order of the rows in the variance, covariance matrix
+  }
+  \item{var_covar}{
+    variance, covariance matrix that is #taxa x #taxa in size
+  }
+}
+\details{
+    This function is used to calculate a negative log-likelihood of a trait given a sigma squared value and the corresponding variance covariance matrix. This function is applied by trait_likelihood_surface to calculate a likelihood surface for the specified trait over a range of sigma squared values.
+}
+\value{
+    Returns a negative log likelihood value
+}
+\references{
+    O'Meara BC, Ane C, Sanderson MJ, Wainwright PC. 2006. Testing for different rates of continuous trait evolution using likelihood. Evolution 60(5): 922-933
+}
+\author{
+    Lara Breithaupt and Mark Hibbins
+}
+
+\examples{
+  likelihood <- sigma2_likelihood(1, test_trait, Cstar_matrix)
+}
+
