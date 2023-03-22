@@ -58,6 +58,12 @@ And estimate the evolutionary rate:
     > genetree_rate
               [,1]
     [1,] 0.5903072
+    
+Users may obtain unrealistic rate estimates for small number of tips because of poorly resolved likelihood surfaces (see Hibbins et al. 2023). To evaluate this, we have implemented `trait_likelihood_surface` to calculate the trait likelihood surface over a range of sigma squared values. 
+
+    > surface <- trait_likelihood_surface(test_trait, Cstar_matrix, 1, 100)
+    
+This function returns a vector of likelihoods that users can visualize with standard plotting packages.
 
 ## Analyses
 
