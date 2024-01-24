@@ -29,7 +29,7 @@ simulate_traits <- function(n_traits, var_covar, sigma2){
 sigma2_likelihood <- function(sigma2, trait, var_covar) {
 
   one <-c(1, 1, 1)
-  zhat_root <- (t(one)%*%solve(var_covar)%*%one)%*%(t(one)%*%solve(var_covar)%*%trait)
+  zhat_root <- solve((t(one)%*%solve(var_covar)%*%one))%*%(t(one)%*%solve(var_covar)%*%trait)
   top <- exp((-1/2)*((t(trait - zhat_root*one))%*%solve(sigma2*var_covar)%*%(trait - zhat_root*one)))
   bottom = sqrt(((2*pi)^3)*det(sigma2*var_covar))
   logL = log(top/bottom)
