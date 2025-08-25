@@ -7,7 +7,7 @@ sigma2_inference <- function(var_covar, trait){
 
     one <- c(rep(1, num_taxa))
 
-    zhat_root <- (t(one)%*%solve(var_covar)%*%one)%*%(t(one)%*%solve(var_covar)%*%trait)
+    zhat_root <- solve(t(one)%*%solve(var_covar)%*%one)%*%(t(one)%*%solve(var_covar)%*%trait)
     sigma2 <- ((t(trait - zhat_root*one))%*%solve(var_covar)%*%(trait - zhat_root*one))/(num_taxa-1)
 
     return(sigma2)
