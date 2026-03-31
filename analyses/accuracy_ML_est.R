@@ -46,7 +46,7 @@ sim_BM_fabio <- function(t1, t2, N, n_traits) {
 ML_estimate_sigma2 <- function(trait, var_covar) {
   
   one <-c(1, 1, 1)
-  zhat_root <- (t(one)%*%inv(var_covar)%*%one)%*%(t(one)%*%inv(var_covar)%*%trait)
+  zhat_root <- inv(t(one)%*%inv(var_covar)%*%one)%*%(t(one)%*%inv(var_covar)%*%trait)
   sigma2 <- ((t(trait - zhat_root*one))%*%inv(var_covar)%*%(trait - zhat_root*one))/3
   
   return(sigma2)
